@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { TravelForm, type TravelFormData } from "@/components/TravelForm";
 import { TravelPlan } from "@/components/TravelPlan";
-import { generateTravelPlan } from "@/services/gemini";
+import { generateTravelPlan, hasApiKey } from "@/services/gemini";
 import { useToast } from "@/components/ui/use-toast";
+import { ApiKeyForm } from "@/components/ApiKeyForm";
 
 const Index = () => {
   const [travelPlan, setTravelPlan] = useState<string>("");
@@ -47,8 +48,14 @@ const Index = () => {
         </div>
 
         <div className="flex flex-col items-center space-y-6">
-          <TravelForm onSubmit={handleSubmit} isLoading={isLoading} />
-          {travelPlan && <TravelPlan plan={travelPlan} />}
+          {!hasApiKey() ? (
+            <ApiKeyForm />
+          ) : (
+            <>
+              <TravelForm onSubmit={handleSubmit} isLoading={isLoading} />
+              {travelPlan && <TravelPlan plan={travelPlan} />}
+            </>
+          )}
         </div>
       </div>
     </div>

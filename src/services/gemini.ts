@@ -1,7 +1,7 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const getApiKey = () => localStorage.getItem('geminiApiKey');
 
 export const generateTravelPlan = async (
   source: string,
@@ -12,6 +12,13 @@ export const generateTravelPlan = async (
   travelers: string,
   interests: string
 ) => {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    throw new Error("Please enter your Gemini API key in the settings");
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -38,4 +45,12 @@ export const generateTravelPlan = async (
     console.error("Error generating travel plan:", error);
     throw new Error("Failed to generate travel plan. Please try again.");
   }
+}
+
+export const setApiKey = (key: string) => {
+  localStorage.setItem('geminiApiKey', key);
+}
+
+export const hasApiKey = () => {
+  return !!getApiKey();
 }
