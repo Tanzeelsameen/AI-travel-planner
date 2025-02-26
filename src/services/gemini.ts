@@ -22,7 +22,7 @@ export const generateTravelPlan = async (
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt = `As an expert travel planner, create a detailed travel itinerary with the following details:
+    const prompt = `As an expert travel planner, create a detailed travel itinerary in markdown format with the following details:
     - From: ${source}
     - To: ${destination}
     - Dates: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}
@@ -30,13 +30,29 @@ export const generateTravelPlan = async (
     - Number of Travelers: ${travelers}
     - Interests: ${interests}
 
-    Please provide:
-    1. A day-by-day itinerary
-    2. Recommended accommodations within budget
-    3. Must-visit attractions based on interests
-    4. Local food recommendations
-    5. Transportation tips
-    6. Estimated costs breakdown`;
+    Please provide a well-formatted markdown response with:
+
+    # Trip Overview
+    [Brief overview of the trip]
+
+    # Day-by-Day Itinerary
+    [Detailed daily schedule]
+
+    # Accommodations
+    [Recommended places to stay within budget]
+
+    # Must-Visit Attractions
+    [Key attractions based on interests]
+
+    # Local Food Guide
+    [Food recommendations and notable restaurants]
+
+    # Transportation Tips
+    [How to get around]
+
+    # Cost Breakdown
+    [Estimated expenses in a clear format]
+    `;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
