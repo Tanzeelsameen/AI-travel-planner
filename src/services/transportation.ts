@@ -1,8 +1,45 @@
 
-// Mock flight data from SerpAPI
+// Service to handle flight data from SerpAPI
+import { addDays, format } from "date-fns";
+
+// Helper to format date for SerpAPI (YYYY-MM-DD format)
+const formatDateForApi = (date: Date): string => {
+  return format(date, "yyyy-MM-dd");
+};
+
 export const getFlightData = async (source: string, destination: string, date: Date) => {
-  // In a real implementation, this would call the SerpAPI
-  // For now, we'll return mock data
+  try {
+    // Get API key from localStorage - if not set, use mock data
+    const serpApiKey = localStorage.getItem("serpapi_key");
+    
+    if (!serpApiKey) {
+      console.log("No SerpAPI key found, using mock data");
+      return getMockFlightData();
+    }
+    
+    // Build the SerpAPI URL
+    const formattedDate = formatDateForApi(date);
+    const url = `https://serpapi.com/search.json?engine=google_flights&type=2&departure_id=${source}&arrival_id=${destination}&outbound_date=${formattedDate}&currency=USD&hl=en&api_key=${serpApiKey}`;
+    
+    console.log(`Fetching flight data for ${source} to ${destination} on ${formattedDate}`);
+    
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`SerpAPI error: ${response.status} ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching flight data:", error);
+    // Fall back to mock data if there's an error
+    console.log("Falling back to mock data due to error");
+    return getMockFlightData();
+  }
+};
+
+// Mock data function for fallback
+const getMockFlightData = () => {
   return {
     "best_flights": [
       {

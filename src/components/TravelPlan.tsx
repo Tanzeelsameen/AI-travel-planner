@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { SerpApiKeyForm } from "@/components/SerpApiKeyForm";
 
 interface TravelPlanProps {
   plan: string;
@@ -18,6 +19,8 @@ interface TravelPlanProps {
 }
 
 export const TravelPlan = ({ plan, flightData }: TravelPlanProps) => {
+  const serpApiKey = typeof window !== 'undefined' ? localStorage.getItem("serpapi_key") : null;
+  
   return (
     <Card className="w-full max-w-2xl p-6 mt-6 backdrop-blur-sm bg-white/30 shadow-xl">
       <ScrollArea className="h-[500px] pr-4">
@@ -25,6 +28,12 @@ export const TravelPlan = ({ plan, flightData }: TravelPlanProps) => {
           {flightData && (
             <div className="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
               <h2 className="text-xl font-bold text-blue-800 mb-4">Recommended Flights</h2>
+              
+              {!serpApiKey && (
+                <div className="mb-4">
+                  <SerpApiKeyForm />
+                </div>
+              )}
               
               <Table>
                 <TableHeader>
