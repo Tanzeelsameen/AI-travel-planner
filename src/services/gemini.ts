@@ -63,6 +63,36 @@ export const generateTravelPlan = async (
   }
 }
 
+export const generateChatResponse = async (message: string, travelPlan: string) => {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    throw new Error("Please enter your Gemini API key in the settings");
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const prompt = `You are a helpful travel assistant. The user has received the following travel plan and is asking a follow-up question. 
+    
+    Here is the travel plan that was generated earlier:
+    
+    ${travelPlan}
+    
+    The user's question is: "${message}"
+    
+    Please provide a helpful, informative, and concise response to their question, using the information in the travel plan where possible. If you don't know the answer to something not covered in the plan, you can suggest alternatives or provide general travel advice instead.`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Error generating chat response:", error);
+    throw new Error("Failed to generate response. Please try again.");
+  }
+}
+
 export const setApiKey = (key: string) => {
   localStorage.setItem('geminiApiKey', key);
 }

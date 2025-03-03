@@ -11,11 +11,13 @@ const Index = () => {
   const [travelPlan, setTravelPlan] = useState<string>("");
   const [flightData, setFlightData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [destination, setDestination] = useState<string>("");
   const { toast } = useToast();
 
   const handleSubmit = async (data: TravelFormData) => {
     try {
       setIsLoading(true);
+      setDestination(data.destination);
       const plan = await generateTravelPlan(
         data.source,
         data.destination,
@@ -72,7 +74,7 @@ const Index = () => {
           ) : (
             <>
               <TravelForm onSubmit={handleSubmit} isLoading={isLoading} />
-              {travelPlan && <TravelPlan plan={travelPlan} flightData={flightData} />}
+              {travelPlan && <TravelPlan plan={travelPlan} flightData={flightData} destination={destination} />}
             </>
           )}
         </div>
