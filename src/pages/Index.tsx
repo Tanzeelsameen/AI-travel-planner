@@ -3,11 +3,13 @@ import { useState } from "react";
 import { TravelForm, type TravelFormData } from "@/components/TravelForm";
 import { TravelPlan } from "@/components/TravelPlan";
 import { generateTravelPlan, hasApiKey } from "@/services/gemini";
+import { getFlightData } from "@/services/transportation";
 import { useToast } from "@/components/ui/use-toast";
 import { ApiKeyForm } from "@/components/ApiKeyForm";
 
 const Index = () => {
   const [travelPlan, setTravelPlan] = useState<string>("");
+  const [flightData, setFlightData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -24,6 +26,23 @@ const Index = () => {
         data.interests
       );
       setTravelPlan(plan);
+      
+      // If flight information is requested, fetch it
+      if (data.includeFlights) {
+        try {
+          const flights = await getFlightData(data.source, data.destination, data.startDate!);
+          setFlightData(flights);
+        } catch (flightError) {
+          console.error("Error fetching flight data:", flightError);
+          toast({
+            title: "Flight Information",
+            description: "Could not retrieve flight information. Showing itinerary only.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        setFlightData(null);
+      }
     } catch (error) {
       toast({
         variant: "destructive",
@@ -53,7 +72,7 @@ const Index = () => {
           ) : (
             <>
               <TravelForm onSubmit={handleSubmit} isLoading={isLoading} />
-              {travelPlan && <TravelPlan plan={travelPlan} />}
+              {travelPlan && <TravelPlan plan={travelPlan} flightData={flightData} />}
             </>
           )}
         </div>

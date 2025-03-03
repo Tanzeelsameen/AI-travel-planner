@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { DatePicker } from "./DatePicker";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
+import { Checkbox } from "./ui/checkbox";
 
 export interface TravelFormData {
   source: string;
@@ -16,6 +17,7 @@ export interface TravelFormData {
   budget: string;
   travelers: string;
   interests: string;
+  includeFlights: boolean;
 }
 
 interface TravelFormProps {
@@ -33,6 +35,7 @@ export const TravelForm = ({ onSubmit, isLoading }: TravelFormProps) => {
     budget: "",
     travelers: "",
     interests: "",
+    includeFlights: false,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -128,6 +131,22 @@ export const TravelForm = ({ onSubmit, isLoading }: TravelFormProps) => {
             onChange={(e) => setFormData({ ...formData, interests: e.target.value })}
             className="bg-white/50"
           />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="includeFlights" 
+            checked={formData.includeFlights}
+            onCheckedChange={(checked) => 
+              setFormData({ ...formData, includeFlights: checked === true })
+            }
+          />
+          <Label 
+            htmlFor="includeFlights" 
+            className="text-sm font-medium leading-none cursor-pointer"
+          >
+            Include flight information
+          </Label>
         </div>
 
         <Button 
