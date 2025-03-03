@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 interface TravelPlanProps {
   plan: string;
@@ -32,7 +33,7 @@ export const TravelPlan = ({ plan, flightData }: TravelPlanProps) => {
                     <TableHead>Route</TableHead>
                     <TableHead>Schedule</TableHead>
                     <TableHead>Price</TableHead>
-                    <TableHead>Action</TableHead>
+                    <TableHead className="text-center">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -79,15 +80,21 @@ export const TravelPlan = ({ plan, flightData }: TravelPlanProps) => {
                       <TableCell>
                         <span className="font-bold text-emerald-600">${flight.price}</span>
                       </TableCell>
-                      <TableCell>
-                        <a 
-                          href={`https://www.google.com/flights?hl=en#flt=${flight.flights[0].flight_number}.${flight.flights[0].departure_airport.id}.${flight.flights[0].arrival_airport.id}`} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="px-3 py-1 bg-emerald-500 text-white text-xs rounded hover:bg-emerald-600 transition-colors"
+                      <TableCell className="text-center">
+                        <Button 
+                          variant="default" 
+                          size="sm" 
+                          className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs"
+                          asChild
                         >
-                          Book now
-                        </a>
+                          <a 
+                            href={`https://www.google.com/flights?hl=en#flt=${flight.flights[0].flight_number}.${flight.flights[0].departure_airport.id}.${flight.flights[0].arrival_airport.id}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                          >
+                            Book now
+                          </a>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
