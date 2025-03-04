@@ -1,7 +1,7 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const getApiKey = () => localStorage.getItem('geminiApiKey');
+const getApiKey = () => import.meta.env.VITE_GEMINI_API_KEY;
 
 export const generateTravelPlan = async (
   source: string,

@@ -10,7 +10,7 @@ const formatDateForApi = (date: Date): string => {
 export const getFlightData = async (source: string, destination: string, date: Date) => {
   try {
     // Get API key from localStorage - if not set, use mock data
-    const serpApiKey = localStorage.getItem("serpapi_key");
+    const serpApiKey = import.meta.env.VITE_SERP_API_KEY;
     
     if (!serpApiKey) {
       console.log("No SerpAPI key found, using mock data");
