@@ -22,10 +22,13 @@ export const generateTravelPlan = async (
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+    // Calculate the duration of the trip
+    const tripDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
+
     const prompt = `As an expert travel planner, create a detailed travel itinerary in markdown format with the following details:
     - From: ${source}
     - To: ${destination}
-    - Dates: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}
+    - Dates: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()} (${tripDays} days)
     - Budget: $${budget}
     - Number of Travelers: ${travelers}
     - Interests: ${interests}
@@ -33,25 +36,25 @@ export const generateTravelPlan = async (
     Please provide a well-formatted markdown response with:
 
     # Trip Overview
-    [Brief overview of the trip]
+    [Brief overview of the trip to ${destination}]
 
     # Day-by-Day Itinerary
-    [Detailed daily schedule]
+    [Detailed daily schedule for ${tripDays} days in ${destination}]
 
     # Accommodations
-    [Recommended places to stay within budget]
+    [Recommended places to stay within budget of $${budget}]
 
     # Must-Visit Attractions
-    [Key attractions based on interests]
+    [Key attractions in ${destination} based on interests: ${interests}]
 
     # Local Food Guide
-    [Food recommendations and notable restaurants]
+    [Food recommendations and notable restaurants in ${destination}]
 
     # Transportation Tips
-    [How to get around]
+    [How to get around in ${destination}]
 
     # Cost Breakdown
-    [Estimated expenses in a clear format]
+    [Estimated expenses in a clear format, ensuring the total stays within $${budget}]
     `;
 
     const result = await model.generateContent(prompt);
