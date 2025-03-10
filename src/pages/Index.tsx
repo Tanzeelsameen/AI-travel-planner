@@ -38,9 +38,10 @@ const Index = () => {
           console.error("Error fetching flight data:", flightError);
           toast({
             title: "Flight Information",
-            description: "Could not retrieve flight information. Showing itinerary only.",
+            description: flightError instanceof Error ? flightError.message : "Could not retrieve flight information. Please set up a SerpAPI key.",
             variant: "destructive",
           });
+          setFlightData(null);
         }
       } else {
         setFlightData(null);
