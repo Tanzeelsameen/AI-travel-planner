@@ -7,14 +7,19 @@ const formatDateForApi = (date: Date): string => {
   return format(date, "yyyy-MM-dd");
 };
 
+// Get API key from localStorage
+const getApiKey = () => {
+  return localStorage.getItem("serpapi_key") || import.meta.env.VITE_SERP_API_KEY;
+};
+
 export const getFlightData = async (source: string, destination: string, date: Date) => {
   try {
     // Get API key from localStorage - if not set, use mock data
-    const serpApiKey = import.meta.env.VITE_SERP_API_KEY;
+    const serpApiKey = getApiKey();
     
     if (!serpApiKey) {
       console.log("No SerpAPI key found, using mock data");
-      return getMockFlightData();
+      return getMockFlightData(source, destination, date);
     }
     
     // Build the SerpAPI URL
@@ -34,33 +39,42 @@ export const getFlightData = async (source: string, destination: string, date: D
     console.error("Error fetching flight data:", error);
     // Fall back to mock data if there's an error
     console.log("Falling back to mock data due to error");
-    return getMockFlightData();
+    return getMockFlightData(source, destination, date);
   }
 };
 
-// Mock data function for fallback
-const getMockFlightData = () => {
+// Mock data function for fallback with dynamic source and destination
+const getMockFlightData = (source: string, destination: string, date: Date) => {
+  const formattedDate = formatDateForApi(date);
+  const nextDayDate = addDays(date, 1);
+  const formattedNextDay = formatDateForApi(nextDayDate);
+  
+  const departureTime = "17:05";
+  const arrivalTime = "22:45";
+  const nextDayDepartureTime = "07:00";
+  const nextDayArrivalTime = "08:45";
+  
   return {
     "best_flights": [
       {
         "flights": [
           {
             "departure_airport": {
-              "name": "Indira Gandhi International Airport",
-              "id": "DEL",
-              "time": "2025-03-07 17:05"
+              "name": `${source} International Airport`,
+              "id": source,
+              "time": `${formattedDate} ${departureTime}`
             },
             "arrival_airport": {
-              "name": "Don Mueang International Airport",
+              "name": "Transit Airport",
               "id": "DMK",
-              "time": "2025-03-07 22:45"
+              "time": `${formattedDate} ${arrivalTime}`
             },
             "duration": 250,
             "airplane": "Airbus A330",
-            "airline": "Thai AirAsia X",
+            "airline": "Transit Airlines",
             "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/XJ.png",
             "travel_class": "Economy",
-            "flight_number": "XJ 231",
+            "flight_number": "TA 231",
             "legroom": "31 in",
             "extensions": [
               "Average legroom (31 in)",
@@ -70,21 +84,21 @@ const getMockFlightData = () => {
           },
           {
             "departure_airport": {
-              "name": "Don Mueang International Airport",
+              "name": "Transit Airport",
               "id": "DMK",
-              "time": "2025-03-08 07:00"
+              "time": `${formattedNextDay} ${nextDayDepartureTime}`
             },
             "arrival_airport": {
-              "name": "Noi Bai International Airport",
-              "id": "HAN",
-              "time": "2025-03-08 08:45"
+              "name": `${destination} International Airport`,
+              "id": destination,
+              "time": `${formattedNextDay} ${nextDayArrivalTime}`
             },
             "duration": 105,
             "airplane": "Airbus A320",
-            "airline": "Thai AirAsia",
+            "airline": "Destination Airlines",
             "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/FD.png",
             "travel_class": "Economy",
-            "flight_number": "FD 642",
+            "flight_number": "DA 642",
             "legroom": "28 in",
             "extensions": [
               "Below average legroom (28 in)",
@@ -95,7 +109,7 @@ const getMockFlightData = () => {
         "layovers": [
           {
             "duration": 495,
-            "name": "Don Mueang International Airport",
+            "name": "Transit Airport",
             "id": "DMK",
             "overnight": true
           }
@@ -115,21 +129,21 @@ const getMockFlightData = () => {
         "flights": [
           {
             "departure_airport": {
-              "name": "Indira Gandhi International Airport",
-              "id": "DEL",
-              "time": "2025-03-07 00:05"
+              "name": `${source} International Airport`,
+              "id": source,
+              "time": `${formattedDate} 00:05`
             },
             "arrival_airport": {
-              "name": "Noi Bai International Airport",
-              "id": "HAN",
-              "time": "2025-03-07 05:35"
+              "name": `${destination} International Airport`,
+              "id": destination,
+              "time": `${formattedDate} 05:35`
             },
             "duration": 240,
             "airplane": "Airbus A330",
-            "airline": "Vietjet",
+            "airline": "Direct Airlines",
             "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/VJ.png",
             "travel_class": "Economy",
-            "flight_number": "VJ 972",
+            "flight_number": "DA 972",
             "legroom": "31 in",
             "extensions": [
               "Average legroom (31 in)",

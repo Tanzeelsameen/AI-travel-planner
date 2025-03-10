@@ -32,9 +32,25 @@ export const TravelPlan = ({ plan, flightData, destination = "" }: TravelPlanPro
               <div className="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
                 <h2 className="text-xl font-bold text-blue-800 mb-4">Recommended Flights</h2>
                 
-                {!serpApiKey && (
-                  <div className="mb-4">
-                    <SerpApiKeyForm />
+                {/* Only show SerpApiKeyForm if user explicitly clicks to set up a real API key */}
+                {flightData.best_flights && flightData.best_flights.length > 0 && (
+                  <div className="mb-4 text-sm text-gray-600">
+                    <p>
+                      Note: Using sample flight data. 
+                      {!serpApiKey && (
+                        <Button 
+                          variant="link" 
+                          className="p-0 h-auto text-blue-600"
+                          onClick={() => document.getElementById('serpapi-setup')?.classList.remove('hidden')}
+                        >
+                          Set up real flight data
+                        </Button>
+                      )}
+                    </p>
+                    
+                    <div id="serpapi-setup" className="hidden mt-4">
+                      <SerpApiKeyForm />
+                    </div>
                   </div>
                 )}
                 
@@ -100,7 +116,7 @@ export const TravelPlan = ({ plan, flightData, destination = "" }: TravelPlanPro
                             asChild
                           >
                             <a 
-                              href={`https://www.google.com/flights?hl=en#flt=${flight.flights[0].flight_number}.${flight.flights[0].departure_airport.id}.${flight.flights[0].arrival_airport.id}`} 
+                              href={`https://www.google.com/flights?hl=en#flt=${flight.flights[0].departure_airport.id}.${flight.flights[0].arrival_airport.id}`} 
                               target="_blank" 
                               rel="noopener noreferrer"
                             >
