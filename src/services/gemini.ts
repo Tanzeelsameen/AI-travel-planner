@@ -1,7 +1,16 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const getApiKey = () => import.meta.env.VITE_GEMINI_API_KEY;
+const getApiKey = () => {
+  // First try to get the API key from localStorage
+  const storedKey = localStorage.getItem('geminiApiKey');
+  if (storedKey) {
+    return storedKey;
+  }
+  
+  // If not in localStorage, try the environment variable
+  return import.meta.env.VITE_GEMINI_API_KEY;
+};
 
 export const generateTravelPlan = async (
   source: string,
@@ -101,5 +110,10 @@ export const setApiKey = (key: string) => {
 }
 
 export const hasApiKey = () => {
-  return !!getApiKey();
+  const storedKey = localStorage.getItem('geminiApiKey');
+  if (storedKey) {
+    return true;
+  }
+  
+  return !!import.meta.env.VITE_GEMINI_API_KEY;
 }
