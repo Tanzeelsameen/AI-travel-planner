@@ -11,6 +11,7 @@ const Index = () => {
   const [travelPlan, setTravelPlan] = useState<string>("");
   const [flightData, setFlightData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingFlights, setIsLoadingFlights] = useState(false);
   const [destination, setDestination] = useState<string>("");
   const { toast } = useToast();
 
@@ -32,16 +33,23 @@ const Index = () => {
       // If flight information is requested, fetch it
       if (data.includeFlights) {
         try {
+          setIsLoadingFlights(true);
           const flights = await getFlightData(data.source, data.destination, data.startDate!);
           setFlightData(flights);
+          toast({
+            title: "Flight Information",
+            description: "Real-time flight data has been fetched successfully.",
+          });
         } catch (flightError) {
           console.error("Error fetching flight data:", flightError);
           toast({
-            title: "Flight Information",
-            description: flightError instanceof Error ? flightError.message : "Could not retrieve flight information. Please set up a SerpAPI key.",
+            title: "Flight Information Error",
+            description: flightError instanceof Error ? flightError.message : "Could not retrieve flight information.",
             variant: "destructive",
           });
           setFlightData(null);
+        } finally {
+          setIsLoadingFlights(false);
         }
       } else {
         setFlightData(null);
@@ -75,7 +83,14 @@ const Index = () => {
           ) : (
             <>
               <TravelForm onSubmit={handleSubmit} isLoading={isLoading} />
-              {travelPlan && <TravelPlan plan={travelPlan} flightData={flightData} destination={destination} />}
+              {travelPlan && (
+                <TravelPlan 
+                  plan={travelPlan} 
+                  flightData={flightData} 
+                  destination={destination}
+                  isLoadingFlights={isLoadingFlights} 
+                />
+              )}
             </>
           )}
         </div>

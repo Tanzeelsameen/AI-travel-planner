@@ -7,18 +7,17 @@ const formatDateForApi = (date: Date): string => {
   return format(date, "yyyy-MM-dd");
 };
 
-// Get API key from localStorage
+// Default API key to use if none is found in localStorage
+const DEFAULT_API_KEY = "adff238fd78385edef43ef861052829c82d4bc0f1c294273d2dbe829c1f29ea0";
+
+// Get API key from localStorage or use the default one
 const getApiKey = () => {
-  return localStorage.getItem("serpapi_key") || import.meta.env.VITE_SERP_API_KEY;
+  return localStorage.getItem("serpapi_key") || DEFAULT_API_KEY;
 };
 
 export const getFlightData = async (source: string, destination: string, date: Date) => {
-  // Get API key from localStorage
+  // Get API key from localStorage or use the default one
   const serpApiKey = getApiKey();
-  
-  if (!serpApiKey) {
-    throw new Error("No SerpAPI key found. Please set up your SerpAPI key to get real-time flight information.");
-  }
   
   // Build the SerpAPI URL
   const formattedDate = formatDateForApi(date);

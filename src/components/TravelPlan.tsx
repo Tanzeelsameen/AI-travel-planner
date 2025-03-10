@@ -13,26 +13,36 @@ import {
 import { Button } from "@/components/ui/button";
 import { SerpApiKeyForm } from "@/components/SerpApiKeyForm";
 import { TravelChat } from "@/components/TravelChat";
+import { Loader2 } from "lucide-react";
 
 interface TravelPlanProps {
   plan: string;
   flightData?: any;
   destination?: string;
+  isLoadingFlights?: boolean;
 }
 
-export const TravelPlan = ({ plan, flightData, destination = "" }: TravelPlanProps) => {
-  const serpApiKey = typeof window !== 'undefined' ? localStorage.getItem("serpapi_key") : null;
-  
+export const TravelPlan = ({ 
+  plan, 
+  flightData, 
+  destination = "", 
+  isLoadingFlights = false 
+}: TravelPlanProps) => {
   return (
     <div className="w-full space-y-6">
       <Card className="w-full max-w-2xl p-6 backdrop-blur-sm bg-white/30 shadow-xl">
         <ScrollArea className="h-[500px] pr-4">
           <div className="prose prose-emerald max-w-none">
-            {flightData ? (
+            {isLoadingFlights ? (
+              <div className="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-100 flex flex-col items-center justify-center">
+                <Loader2 className="h-8 w-8 text-blue-500 animate-spin mb-2" />
+                <p className="text-blue-800">Loading flight information...</p>
+              </div>
+            ) : flightData ? (
               <div className="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
                 <h2 className="text-xl font-bold text-blue-800 mb-4">Recommended Flights</h2>
                 
-                {flightData.best_flights && flightData.best_flights.length > 0 && (
+                {flightData.best_flights && flightData.best_flights.length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -48,7 +58,9 @@ export const TravelPlan = ({ plan, flightData, destination = "" }: TravelPlanPro
                         <TableRow key={index}>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <img src={flight.airline_logo} alt="Airline" className="h-6" />
+                              {flight.airline_logo && (
+                                <img src={flight.airline_logo} alt="Airline" className="h-6" />
+                              )}
                               <span className="font-medium">{flight.flights[0].airline}</span>
                             </div>
                           </TableCell>
@@ -107,16 +119,14 @@ export const TravelPlan = ({ plan, flightData, destination = "" }: TravelPlanPro
                       ))}
                     </TableBody>
                   </Table>
+                ) : (
+                  <div className="text-center py-4">
+                    <p>No flight data available for this route. Try a different source or destination.</p>
+                  </div>
                 )}
               </div>
             ) : (
-              serpApiKey === null && (
-                <div className="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                  <h2 className="text-xl font-bold text-blue-800 mb-4">Flight Information</h2>
-                  <p className="mb-4">Please set up your SerpAPI key to get real-time flight information.</p>
-                  <SerpApiKeyForm />
-                </div>
-              )
+              null
             )}
             <Markdown>{plan}</Markdown>
           </div>
