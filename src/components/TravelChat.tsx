@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,13 +19,21 @@ interface TravelChatProps {
   travelPlan: string;
 }
 
+const convertLinksToHtml = (text: string) => {
+  const urlPattern = /(https?:\/\/[^\s]+)|(www\.[^\s]+\.[^\s]+)/g;
+  
+  return text.replace(urlPattern, (url) => {
+    const href = url.startsWith('www.') ? `https://${url}` : url;
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline">${url}</a>`;
+  });
+};
+
 export const TravelChat = ({ destination, travelPlan }: TravelChatProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Add initial assistant message
   useEffect(() => {
     if (travelPlan && messages.length === 0) {
       setMessages([
@@ -40,7 +47,6 @@ export const TravelChat = ({ destination, travelPlan }: TravelChatProps) => {
     }
   }, [travelPlan, destination, messages.length]);
 
-  // Auto-scroll to the latest message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -73,7 +79,6 @@ export const TravelChat = ({ destination, travelPlan }: TravelChatProps) => {
       
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      // Handle error
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
@@ -107,7 +112,14 @@ export const TravelChat = ({ destination, travelPlan }: TravelChatProps) => {
               )}
             >
               <div>
-                <div className="text-sm">{message.content}</div>
+                <div 
+                  className="text-sm"
+                  dangerouslySetInnerHTML={{ 
+                    __html: message.role === "assistant" 
+                      ? convertLinksToHtml(message.content)
+                      : message.content 
+                  }}
+                />
                 <div className="text-xs text-gray-500 mt-1">
                   {message.timestamp.toLocaleTimeString([], { 
                     hour: "2-digit", 
